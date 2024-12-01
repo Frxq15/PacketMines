@@ -1,0 +1,7 @@
+WAND:
+  MATERIAL: 'GOLDEN_AXE'
+  NAME: '&eMine Creation Wand'
+  GLOW: true
+  LORE:
+    - '&7This wand allows you to create a region for a specific mine'
+    - '&7by selecting a region, then creating it with &d/amine create <mine>'

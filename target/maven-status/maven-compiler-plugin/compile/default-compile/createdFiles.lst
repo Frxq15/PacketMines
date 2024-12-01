@@ -1,0 +1,7 @@
+me\frxq15\packetmines\command\subcommands\amine\WandCommand.class
+me\frxq15\packetmines\PacketMines.class
+me\frxq15\packetmines\command\CommandHandler.class
+me\frxq15\packetmines\utils\ItemUtils.class
+me\frxq15\packetmines\command\commands\AdminMineCommand.class
+me\frxq15\packetmines\command\SubCommand.class
+me\frxq15\packetmines\command\ParentCommand.class

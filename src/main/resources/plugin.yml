@@ -1,0 +1,4 @@
+name: PacketMines
+version: '${project.version}'
+main: me.frxq15.packetmines.PacketMines
+api-version: '1.20'
