@@ -15,6 +15,7 @@ public final class PacketMines extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        registry();
         // Plugin startup logic
 
     }
