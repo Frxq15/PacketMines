@@ -5,13 +5,11 @@ import me.frxq15.packetmines.object.GPlayer;
 import me.frxq15.packetmines.object.Mine;
 import me.frxq15.packetmines.object.MineRegion;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -108,36 +106,4 @@ public class DataListeners implements Listener {
         }
     }
 
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        Location location = event.getBlock().getLocation();
-
-        // Check if player has a mine
-        Mine mine = plugin.getMineManager().getPlayerMine(player);
-        if (mine == null) {
-            return;
-        }
-
-        // Check if the block is in the player's mine
-        if (!mine.contains(location)) {
-            return;
-        }
-
-        // Check if player is using the custom pickaxe
-        ItemStack tool = player.getInventory().getItemInMainHand();
-        if (tool != null && plugin.getItemUtils().isPickaxe(tool)) {
-            // Cancel the real break and send fake break
-            event.setCancelled(true);
-
-            // Send fake break animation
-            plugin.getPacketHandler().sendFakeBreak(player, location, mine);
-
-            // Give player the drop (optional - you can customize this)
-            Material dropMaterial = mine.getFillMaterial();
-            if (dropMaterial != Material.AIR && dropMaterial.isBlock()) {
-                player.getInventory().addItem(new ItemStack(dropMaterial, 1));
-            }
-        }
-    }
 }
