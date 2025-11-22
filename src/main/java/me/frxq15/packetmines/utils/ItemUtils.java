@@ -53,4 +53,41 @@ public class ItemUtils {
         NamespacedKey key = new NamespacedKey(plugin, "PacketMines");
         return meta.getPersistentDataContainer().has(key, PersistentDataType.STRING);
     }
+
+    public ItemStack getPickaxe() {
+        List<String> lore = new ArrayList<String>();
+        String material = plugin.getConfig().getString("PICKAXE.MATERIAL", "DIAMOND_PICKAXE");
+        final ItemStack i = new ItemStack(Material.valueOf(material), 1);
+        String name = plugin.getConfig().getString("PICKAXE.NAME", "&bMine Pickaxe");
+
+        final ItemMeta meta = i.getItemMeta();
+        for (String lines : plugin.getConfig().getStringList("PICKAXE.LORE")) {
+            lore.add(plugin.format(lines));
+        }
+        meta.setDisplayName(plugin.format(name));
+        if (plugin.getConfig().getBoolean("PICKAXE.GLOW", true)) {
+            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        NamespacedKey key = new NamespacedKey(plugin, "PacketMinesPickaxe");
+        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, "packetmines_pickaxe");
+        meta.setLore(lore);
+        i.setItemMeta(meta);
+        return i;
+    }
+
+    public void givePickaxe(Player player) {
+        player.getInventory().addItem(getPickaxe());
+    }
+
+    public boolean isPickaxe(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+        NamespacedKey key = new NamespacedKey(plugin, "PacketMinesPickaxe");
+        return meta.getPersistentDataContainer().has(key, PersistentDataType.STRING);
+    }
 }

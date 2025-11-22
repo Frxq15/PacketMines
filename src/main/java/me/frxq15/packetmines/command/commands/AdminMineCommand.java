@@ -3,7 +3,7 @@ package me.frxq15.packetmines.command.commands;
 import me.frxq15.packetmines.PacketMines;
 import me.frxq15.packetmines.command.ParentCommand;
 import me.frxq15.packetmines.command.SubCommand;
-import me.frxq15.packetmines.command.subcommands.amine.WandCommand;
+import me.frxq15.packetmines.command.subcommands.amine.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -18,6 +18,12 @@ public class AdminMineCommand extends ParentCommand {
     public AdminMineCommand(PacketMines plugin) {
         super(plugin, "amine", "packetmines.admin");
         register(new WandCommand(plugin));
+        register(new CreateRegionCommand(plugin));
+        register(new DeleteRegionCommand(plugin));
+        register(new ListRegionsCommand(plugin));
+        register(new SetMineBlockCommand(plugin));
+        register(new ExpandMineCommand(plugin));
+        register(new GivePickaxeCommand(plugin));
     }
 
     @Override
