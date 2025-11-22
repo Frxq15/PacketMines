@@ -5,6 +5,7 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import me.frxq15.packetmines.command.CommandHandler;
 import me.frxq15.packetmines.file.FileManager;
 import me.frxq15.packetmines.listener.DataListeners;
+import me.frxq15.packetmines.listener.PacketListeners;
 import me.frxq15.packetmines.manager.MineManager;
 import me.frxq15.packetmines.packet.PacketHandler;
 import me.frxq15.packetmines.utils.ItemUtils;
@@ -66,6 +67,7 @@ public final class PacketMines extends JavaPlugin {
 
         // Register listeners
         getServer().getPluginManager().registerEvents(new DataListeners(this), this);
+        PacketEvents.getAPI().getEventManager().registerListener(new PacketListeners(this));
 
         // Auto-save every 5 minutes (6000 ticks)
         getServer().getScheduler().runTaskTimer(this, () -> {
