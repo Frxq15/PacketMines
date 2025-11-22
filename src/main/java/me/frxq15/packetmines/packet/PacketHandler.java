@@ -71,8 +71,9 @@ public class PacketHandler {
             int chunkX = firstLoc.getBlockX() >> 4;
             int chunkZ = firstLoc.getBlockZ() >> 4;
 
+            Vector3i chunkPosition = new Vector3i(chunkX, 0, chunkZ);
             WrapperPlayServerMultiBlockChange multiBlockChange =
-                new WrapperPlayServerMultiBlockChange(chunkX, chunkZ, blocks);
+                new WrapperPlayServerMultiBlockChange(chunkPosition, true, blocks);
 
             user.sendPacket(multiBlockChange);
         }
