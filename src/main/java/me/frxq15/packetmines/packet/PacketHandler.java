@@ -2,6 +2,8 @@ package me.frxq15.packetmines.packet;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.protocol.world.states.type.StateTypes;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerMultiBlockChange;
@@ -12,7 +14,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles sending fake block packets to players using PacketEvents
@@ -48,28 +52,42 @@ public class PacketHandler {
 
         int stateId = getStateId(material);
 
-        // Send in chunks to avoid packet size limits
-        int chunkSize = 4096; // PacketEvents multi-block change limit
-        for (int i = 0; i < locations.size(); i += chunkSize) {
-            List<Location> chunk = locations.subList(i, Math.min(i + chunkSize, locations.size()));
+        // Group blocks by chunk coordinates
+        Map<Long, List<Location>> blocksByChunk = new HashMap<>();
 
+        for (Location loc : locations) {
+            int chunkX = loc.getBlockX() >> 4;
+            int chunkZ = loc.getBlockZ() >> 4;
+            long chunkKey = ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
+
+            blocksByChunk.computeIfAbsent(chunkKey, k -> new ArrayList<>()).add(loc);
+        }
+
+        // Send a packet for each chunk
+        for (Map.Entry<Long, List<Location>> entry : blocksByChunk.entrySet()) {
+            long chunkKey = entry.getKey();
+            List<Location> chunkBlocks = entry.getValue();
+
+            int chunkX = (int) (chunkKey >> 32);
+            int chunkZ = (int) chunkKey;
+
+            // Create encoded blocks for this chunk
             WrapperPlayServerMultiBlockChange.EncodedBlock[] blocks =
-                new WrapperPlayServerMultiBlockChange.EncodedBlock[chunk.size()];
+                new WrapperPlayServerMultiBlockChange.EncodedBlock[chunkBlocks.size()];
 
-            for (int j = 0; j < chunk.size(); j++) {
-                Location loc = chunk.get(j);
-                blocks[j] = new WrapperPlayServerMultiBlockChange.EncodedBlock(
+            for (int i = 0; i < chunkBlocks.size(); i++) {
+                Location loc = chunkBlocks.get(i);
+                // Calculate relative position within the chunk (0-15 for X and Z)
+                int relX = loc.getBlockX() & 0xF;
+                int relZ = loc.getBlockZ() & 0xF;
+
+                blocks[i] = new WrapperPlayServerMultiBlockChange.EncodedBlock(
                     stateId,
-                    (byte) (loc.getBlockX() & 0xF),
+                    (byte) relX,
                     (short) loc.getBlockY(),
-                    (byte) (loc.getBlockZ() & 0xF)
+                    (byte) relZ
                 );
             }
-
-            // Get chunk coordinates
-            Location firstLoc = chunk.get(0);
-            int chunkX = firstLoc.getBlockX() >> 4;
-            int chunkZ = firstLoc.getBlockZ() >> 4;
 
             Vector3i chunkPosition = new Vector3i(chunkX, 0, chunkZ);
             WrapperPlayServerMultiBlockChange multiBlockChange =
@@ -107,16 +125,34 @@ public class PacketHandler {
     }
 
     /**
-     * Gets the state ID for a material
-     * This is a simplified version - in production you'd want a proper block state mapping
+     * Gets the state ID for a material using PacketEvents' StateTypes
      */
     private int getStateId(Material material) {
-        // Use Bukkit's ordinal as a basic state ID
-        // For proper implementation, you'd need to map to Minecraft's actual state IDs
         try {
-            return material.ordinal();
+            // Convert Bukkit Material name to PacketEvents StateType
+            String materialName = material.name();
+
+            // Use PacketEvents' StateTypes to get the proper state
+            // StateTypes uses the same naming convention as Bukkit materials
+            WrappedBlockState blockState = WrappedBlockState.getByString("minecraft:" + materialName.toLowerCase());
+
+            if (blockState != null) {
+                return blockState.getGlobalId();
+            }
+
+            // Fallback: try to get by StateTypes enum
+            try {
+                var stateType = StateTypes.getByName("minecraft:" + materialName.toLowerCase());
+                if (stateType != null) {
+                    return stateType.getDefaultState().getGlobalId();
+                }
+            } catch (Exception ignored) {
+            }
+
+            // Default to air if not found
+            return StateTypes.AIR.getDefaultState().getGlobalId();
         } catch (Exception e) {
-            return 0; // Default to air
+            return StateTypes.AIR.getDefaultState().getGlobalId();
         }
     }
 
