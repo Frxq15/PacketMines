@@ -1,7 +1,7 @@
 package me.frxq15.packetmines;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import io.github.retrooper.packetevents.factory.spigot.*;
 import me.frxq15.packetmines.command.CommandHandler;
 import me.frxq15.packetmines.file.FileManager;
 import me.frxq15.packetmines.listener.DataListeners;
@@ -32,7 +32,6 @@ public final class PacketMines extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        // Initialize PacketEvents
         PacketEvents.getAPI().init();
 
         registry();

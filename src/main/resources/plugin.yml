@@ -1,4 +1,12 @@
 name: PacketMines
 version: '${project.version}'
 main: me.frxq15.packetmines.PacketMines
-api-version: '1.20'
+load: POSTWORLD
+depend:
+  - packetevents
+
+commands:
+  amine:
+    description: Main command for PacketMines plugin
+    usage: /<command> <subcommand>
+    aliases: [adminmine, packetmine]

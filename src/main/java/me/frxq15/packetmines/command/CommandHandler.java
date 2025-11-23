@@ -16,7 +16,7 @@ public record CommandHandler(PacketMines plugin) {
     }
 
     private void registerCommands() {
-        plugin.getCommand("amine").setExecutor(new AdminMineCommand(plugin));
+        registerCommand("amine", new AdminMineCommand(plugin));
     }
 
     private void registerCommand(@NotNull String name, @NotNull CommandExecutor commandExecutor) {

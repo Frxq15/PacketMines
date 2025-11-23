@@ -1,6 +1,8 @@
 package me.frxq15.packetmines.listener;
 
 import com.github.retrooper.packetevents.event.PacketListener;
+import com.github.retrooper.packetevents.event.PacketListenerAbstract;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
@@ -16,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Listens to PacketEvents for handling fake block interactions
  */
-public class PacketListeners implements PacketListener {
+public class PacketListeners extends PacketListenerAbstract {
     private final PacketMines plugin;
 
     public PacketListeners(PacketMines plugin) {
